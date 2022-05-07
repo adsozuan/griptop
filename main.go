@@ -23,11 +23,21 @@ func NewTitle(text string) *Title {
 
 func main() {
 	app := tview.NewApplication()
-	layout := tview.NewFlex().AddItem(NewTitle("griptop"), 0, 1, false).
-		AddItem(tview.NewFlex().AddItem(tview.NewBox(), 0, 5, false),
-			0, 5, false)
 
-	if err := app.SetRoot(layout, true).EnableMouse(true).Run(); err != nil {
+	grid := tview.NewGrid().SetRows(1, 5, 0).SetColumns(50, 50).
+		AddItem(NewTitle("griptop"),
+			0, 0, 1, 2, 0, 0, false).
+		AddItem(NewTitle("DYN").
+			SetBackgroundColor(tcell.ColorOrange),
+			1, 0, 1, 1, 0, 0, false).
+		AddItem(NewTitle("STAT").
+			SetBackgroundColor(tcell.ColorGreen),
+			1, 1, 1, 1, 0, 0, false).
+		AddItem(NewTitle("STAT").
+			SetBackgroundColor(tcell.ColorRed),
+			2, 0, 1, 2, 0, 0, false)
+
+	if err := app.SetRoot(grid, true).EnableMouse(true).Run(); err != nil {
 		panic(err)
 	}
 }
