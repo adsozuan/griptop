@@ -1,6 +1,7 @@
 package main
 
 import (
+	"adnotanumber.com/griptop/ui"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -25,10 +26,9 @@ func main() {
 	app := tview.NewApplication()
 
 	grid := tview.NewGrid().SetRows(1, 5, 0).SetColumns(50, 50).
-		AddItem(NewTitle("griptop"),
+		AddItem(NewTitle("griptop on my PC"),
 			0, 0, 1, 2, 0, 0, false).
-		AddItem(NewTitle("DYN").
-			SetBackgroundColor(tcell.ColorOrange),
+		AddItem(ui.NewProgressBar("CPU", 43.1),
 			1, 0, 1, 1, 0, 0, false).
 		AddItem(NewTitle("STAT").
 			SetBackgroundColor(tcell.ColorGreen),
