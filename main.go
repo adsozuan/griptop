@@ -1,7 +1,9 @@
 package main
 
 import (
+	"adnotanumber.com/griptop/probes"
 	"adnotanumber.com/griptop/ui"
+	"fmt"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -22,15 +24,20 @@ func NewTitle(text string) *Title {
 	return &t
 }
 
+// TODO use https://github.com/shirou/gopsutil
+
 func main() {
 	app := tview.NewApplication()
+	memUsage := probes.NewMemoryUsage()
+	memUsage.Update()
+	s := fmt.Sprintf("%v", memUsage)
 
 	grid := tview.NewGrid().SetRows(1, 5, 0).SetColumns(50, 50).
 		AddItem(NewTitle("griptop on my PC"),
 			0, 0, 1, 2, 0, 0, false).
 		AddItem(ui.NewProgressBar("CPU", 43.1),
 			1, 0, 1, 1, 0, 0, false).
-		AddItem(NewTitle("STAT").
+		AddItem(NewTitle(s).
 			SetBackgroundColor(tcell.ColorGreen),
 			1, 1, 1, 1, 0, 0, false).
 		AddItem(NewTitle("STAT").
