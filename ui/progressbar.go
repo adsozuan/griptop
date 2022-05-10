@@ -2,6 +2,7 @@ package ui
 
 import (
 	"fmt"
+
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -11,7 +12,7 @@ func NewProgressBar(label string, percentage float64) *tview.Box {
 		func(screen tcell.Screen, x int, y int, width int, height int) (int, int, int, int) {
 			value := int(int(percentage) * (width) / 100)
 			centerY := y + height/2
-			for cx := x + 1; cx < x+value; cx++ {
+			for cx := x + 5; cx < x+value; cx++ {
 				screen.SetContent(cx, centerY, tview.BoxDrawingsHeavyVertical,
 					nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
 			}
