@@ -5,20 +5,20 @@ import (
 )
 
 type MemoryUsage struct {
-	totalMemory       uint64
-	usedMemoryPercent float64
+	TotalMemory       uint64
+	UsedMemoryPercent float64
 }
 
 func NewMemoryUsage() MemoryUsage {
 	memoryUsage := MemoryUsage{
-		totalMemory:       1,
-		usedMemoryPercent: 2,
+		TotalMemory:       1,
+		UsedMemoryPercent: 2,
 	}
 	return memoryUsage
 }
 
 func (m *MemoryUsage) Update() {
 	v, _ := mem.VirtualMemory()
-	m.totalMemory = v.Total
-	m.usedMemoryPercent = v.UsedPercent
+	m.TotalMemory = v.Total
+	m.UsedMemoryPercent = v.UsedPercent
 }

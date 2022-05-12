@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"adnotanumber.com/griptop/services"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
 )
@@ -21,13 +22,22 @@ func NewTitle(text string) *Title {
 	return &t
 }
 
-func Run() {
-	app := tview.NewApplication()
+func updateUi(app *tview.Application, cpubar *Gauge, sysinfodyn chan services.SystemInfoDyn) {
+	for {
+		s := <-sysinfodyn
+		app.QueueUpdateDraw(func() {
+			cpubar.Update(s.CpuUsage)
+		})
+	}
+}
 
+func Run(sysinfodyn chan services.SystemInfoDyn) {
+	app := tview.NewApplication()
+	cpug := NewGauge("CPU")
 	grid := tview.NewGrid().SetRows(1, 5, 0).SetColumns(50, 50).
 		AddItem(NewTitle("griptop on my PC"),
 			0, 0, 1, 2, 0, 0, false).
-		AddItem(NewProgressBar("CPU", 43.1),
+		AddItem(cpug,
 			1, 0, 1, 1, 0, 0, false).
 		AddItem(NewTitle("DYN").
 			SetBackgroundColor(tcell.ColorGreen),
@@ -36,6 +46,7 @@ func Run() {
 			SetBackgroundColor(tcell.ColorRed),
 			2, 0, 1, 2, 0, 0, false)
 
+	go updateUi(app, cpug, sysinfodyn)
 	if err := app.SetRoot(grid, true).EnableMouse(true).Run(); err != nil {
 		panic(err)
 	}

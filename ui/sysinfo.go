@@ -11,8 +11,8 @@ type SysInfoUi struct {
 func NewSysInfoUi() *SysInfoUi {
 	grid := tview.NewGrid()
 	grid.SetRows(4, 2)
-	grid.AddItem(NewProgressBar("CPU", 44.1),
-		0, 0, 1, 0, 0, 0, false)
+	//grid.AddItem(NewGauge("CPU", 44.1),
+	//	0, 0, 1, 0, 0, 0, false)
 
 	sysInfoUi := SysInfoUi{
 		grid: grid,
