@@ -22,31 +22,26 @@ func NewTitle(text string) *Title {
 	return &t
 }
 
-func updateUi(app *tview.Application, cpubar *Gauge, sysinfodyn chan services.SystemInfoDyn) {
+func updateUi(app *tview.Application, sysinfoui *SysInfoUi, sysinfodyn chan services.SystemInfoDyn) {
 	for {
 		s := <-sysinfodyn
 		app.QueueUpdateDraw(func() {
-			cpubar.Update(s.CpuUsage)
+			sysinfoui.cpug.Update(s.CpuUsage)
+			sysinfoui.tasks.Update(s.TotalTaskCount, s.RunningTaskCount)
 		})
 	}
 }
 
 func Run(sysinfodyn chan services.SystemInfoDyn) {
 	app := tview.NewApplication()
-	cpug := NewGauge("CPU")
-	grid := tview.NewGrid().SetRows(1, 5, 0).SetColumns(50, 50).
+	sysinfoui := NewSysInfoUi()
+	grid := tview.NewGrid().SetRows(1, 5, -1).
 		AddItem(NewTitle("griptop on my PC"),
 			0, 0, 1, 2, 0, 0, false).
-		AddItem(cpug,
-			1, 0, 1, 1, 0, 0, false).
-		AddItem(NewTitle("DYN").
-			SetBackgroundColor(tcell.ColorGreen),
-			1, 1, 1, 1, 0, 0, false).
-		AddItem(NewTitle("STAT").
-			SetBackgroundColor(tcell.ColorRed),
-			2, 0, 1, 2, 0, 0, false)
+		AddItem(sysinfoui,
+			1, 0, 1, 1, 0, 0, false)
 
-	go updateUi(app, cpug, sysinfodyn)
+	go updateUi(app, sysinfoui, sysinfodyn)
 	if err := app.SetRoot(grid, true).EnableMouse(true).Run(); err != nil {
 		panic(err)
 	}

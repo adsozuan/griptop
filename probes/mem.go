@@ -17,7 +17,7 @@ func NewMemoryUsage() MemoryUsage {
 	return memoryUsage
 }
 
-func (m *MemoryUsage) Update() {
+func (m *MemoryUsage) Acquire() {
 	v, _ := mem.VirtualMemory()
 	m.TotalMemory = v.Total
 	m.UsedMemoryPercent = v.UsedPercent

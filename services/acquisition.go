@@ -5,11 +5,15 @@ import (
 	"time"
 )
 
+const (
+	rate time.Duration = 500 * time.Millisecond
+)
+
 type SystemInfoDyn struct {
 	CpuUsage         float64
 	MemUsagePercent  float64
-	TotalTaskCount   int64
-	RunningTaskCount int64
+	TotalTaskCount   int
+	RunningTaskCount int
 }
 
 func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
@@ -17,13 +21,15 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 	for {
 		cpu := probes.AcquireCpuUsage()
 		mem := probes.NewMemoryUsage()
-		mem.Update()
+		tasks := probes.NewTaskCountsProbe()
+		mem.Acquire()
+		tasks.Acquire()
 
 		sysinfocurr := SystemInfoDyn{
 			CpuUsage:         cpu[0],
 			MemUsagePercent:  mem.UsedMemoryPercent,
-			TotalTaskCount:   0,
-			RunningTaskCount: 0,
+			TotalTaskCount:   tasks.Total,
+			RunningTaskCount: tasks.Running,
 		}
 
 		select {
@@ -31,7 +37,7 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 			break
 		default:
 			sysinfodyn <- sysinfocurr
-			time.Sleep(500 * time.Millisecond)
+			time.Sleep(rate)
 		}
 	}
 }
