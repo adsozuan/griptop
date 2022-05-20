@@ -38,9 +38,11 @@ func (g *Gauge) drawGauge(screen tcell.Screen, x int, y int, width int, height i
 		screen.SetContent(cx, centerY, tview.BoxDrawingsHeavyVertical,
 			nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
 	}
-	tview.Print(screen, g.label, x+1, centerY, width-2, tview.AlignLeft, tcell.ColorYellow)
+	tview.Print(screen, g.label, x+1, centerY, width-2, tview.AlignLeft, tcell.ColorBlue)
+	tview.Print(screen, "[", x+4, centerY, width-2, tview.AlignLeft, tcell.ColorYellow)
 	tview.Print(screen, fmt.Sprintf("%6.2f%%", g.value),
-		x+width-10, centerY, width-2, tview.AlignLeft, tcell.ColorYellow)
+		x+width-10, centerY, width-2, tview.AlignLeft, tcell.ColorGrey)
+	tview.Print(screen, "]", x+width-3, centerY, width-2, tview.AlignLeft, tcell.ColorYellow)
 
 	return x + 1, centerY + 1, width - 2, height - (centerY + 1 - y)
 }
