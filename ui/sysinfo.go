@@ -22,7 +22,7 @@ func NewSysInfoWidget() *SysInfoWidget {
 	upt := NewTextWithLabel("Uptime:", "08:34:10")
 	proc := NewTextWithLabel("Proc:", "Quantum Ryzen 32 9800X 512 qbits")
 
-	grid.SetRows(1, 1, 1, 1).SetColumns(-2, -3)
+	grid.SetRows(1, 1, 1, 1).SetColumns(-1, -1)
 	grid.AddItem(cpug,
 		0, 0, 1, 1, 0, 0, false).
 		AddItem(memg,

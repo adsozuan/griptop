@@ -27,6 +27,7 @@ func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, sysinfodyn chan 
 		s := <-sysinfodyn
 		app.QueueUpdateDraw(func() {
 			sysinfoui.cpug.Update(s.CpuUsage)
+			sysinfoui.memg.Update(s.MemUsagePercent)
 			sysinfoui.tasks.Update(s.TotalTaskCount, s.RunningTaskCount)
 		})
 	}
