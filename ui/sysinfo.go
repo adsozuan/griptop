@@ -11,6 +11,8 @@ type SysInfoWidget struct {
 	cpug  *Gauge
 	memg  *Gauge
 	tasks *TasksCount
+	ram   *TextWithLabel
+	proc  *TextWithLabel
 }
 
 func NewSysInfoWidget() *SysInfoWidget {
@@ -18,9 +20,9 @@ func NewSysInfoWidget() *SysInfoWidget {
 	cpug := NewGauge("CPU")
 	memg := NewGauge("MEM")
 	tasks := NewTaskCount(0, 0)
-	ram := NewTextWithLabel("Size:", "32 GB")
+	ram := NewTextWithLabel("Size:", "-")
 	upt := NewTextWithLabel("Uptime:", "08:34:10")
-	proc := NewTextWithLabel("Proc:", "Quantum Ryzen 32 9800X 512 qbits")
+	proc := NewTextWithLabel("Proc:", "-")
 
 	grid.SetRows(1, 1, 1, 1).SetColumns(-1, -1)
 	grid.AddItem(cpug,
@@ -41,6 +43,8 @@ func NewSysInfoWidget() *SysInfoWidget {
 		cpug:  cpug,
 		memg:  memg,
 		tasks: tasks,
+		ram:   ram,
+		proc:  proc,
 	}
 	return &sysInfoUi
 }

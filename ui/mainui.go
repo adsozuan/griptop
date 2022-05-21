@@ -33,9 +33,13 @@ func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, sysinfodyn chan 
 	}
 }
 
-func Run(sysinfodyn chan services.SystemInfoDyn) {
+func Run(sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemInfoStatic) {
 	app := tview.NewApplication()
 	sysinfoui := NewSysInfoWidget()
+
+	sysinfoui.ram.Update(sysinfostatic.MemSize)
+	sysinfoui.proc.Update(sysinfostatic.Proc)
+
 	grid := tview.NewGrid().SetRows(1, 5, -1).
 		AddItem(NewTitle("griptop on my PC"),
 			0, 0, 1, 2, 0, 0, false).

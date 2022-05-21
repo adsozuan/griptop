@@ -16,6 +16,11 @@ type SystemInfoDyn struct {
 	RunningTaskCount int
 }
 
+type SystemInfoStatic struct {
+	MemSize string
+	Proc    string
+}
+
 func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 
 	for {
@@ -40,4 +45,14 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 			time.Sleep(rate)
 		}
 	}
+}
+
+func GetInfoStatic() SystemInfoStatic {
+	sysinfostatic := SystemInfoStatic{
+		MemSize: "32 GB",
+		Proc:    "CPU bubl",
+	}
+
+	return sysinfostatic
+
 }

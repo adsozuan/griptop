@@ -10,6 +10,8 @@ func main() {
 	quit := make(chan bool)
 	sysinfodyn := make(chan services.SystemInfoDyn)
 	go services.Acquire(quit, sysinfodyn)
-	ui.Run(sysinfodyn)
+
+	sysinfostatic := services.GetInfoStatic()
+	ui.Run(sysinfodyn, sysinfostatic)
 	quit <- true
 }
