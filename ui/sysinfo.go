@@ -6,14 +6,14 @@ import (
 	"github.com/rivo/tview"
 )
 
-type SysInfoUi struct {
+type SysInfoWidget struct {
 	*tview.Grid
 	cpug  *Gauge
 	memg  *Gauge
 	tasks *TasksCount
 }
 
-func NewSysInfoUi() *SysInfoUi {
+func NewSysInfoWidget() *SysInfoWidget {
 	grid := tview.NewGrid()
 	cpug := NewGauge("CPU")
 	memg := NewGauge("MEM")
@@ -22,7 +22,7 @@ func NewSysInfoUi() *SysInfoUi {
 	upt := NewTextWithLabel("Uptime:", "08:34:10")
 	proc := NewTextWithLabel("Proc:", "Quantum Ryzen 32 9800X 512 qbits")
 
-	grid.SetRows(1, 1, 1, 1).SetColumns(50, 50)
+	grid.SetRows(1, 1, 1, 1).SetColumns(-2, -3)
 	grid.AddItem(cpug,
 		0, 0, 1, 1, 0, 0, false).
 		AddItem(memg,
@@ -36,7 +36,7 @@ func NewSysInfoUi() *SysInfoUi {
 		AddItem(proc,
 			3, 1, 1, 1, 0, 0, false)
 
-	sysInfoUi := SysInfoUi{
+	sysInfoUi := SysInfoWidget{
 		Grid:  grid,
 		cpug:  cpug,
 		memg:  memg,
@@ -81,7 +81,7 @@ func NewTextWithLabel(label string, text string) *TextWithLabel {
 	textw := tview.NewTextView()
 	textw.SetText(text).SetTextAlign(tview.AlignLeft).SetTextColor(tcell.ColorWhite)
 
-	t.Grid.SetColumns(10, -1).
+	t.Grid.SetColumns(-1, -3).
 		AddItem(labelw, 0, 0, 1, 1, 0, 0, false).
 		AddItem(textw, 0, 1, 1, 1, 0, 0, false)
 

@@ -22,7 +22,7 @@ func NewTitle(text string) *Title {
 	return &t
 }
 
-func updateUi(app *tview.Application, sysinfoui *SysInfoUi, sysinfodyn chan services.SystemInfoDyn) {
+func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, sysinfodyn chan services.SystemInfoDyn) {
 	for {
 		s := <-sysinfodyn
 		app.QueueUpdateDraw(func() {
@@ -34,7 +34,7 @@ func updateUi(app *tview.Application, sysinfoui *SysInfoUi, sysinfodyn chan serv
 
 func Run(sysinfodyn chan services.SystemInfoDyn) {
 	app := tview.NewApplication()
-	sysinfoui := NewSysInfoUi()
+	sysinfoui := NewSysInfoWidget()
 	grid := tview.NewGrid().SetRows(1, 5, -1).
 		AddItem(NewTitle("griptop on my PC"),
 			0, 0, 1, 2, 0, 0, false).
