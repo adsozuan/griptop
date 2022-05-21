@@ -34,9 +34,17 @@ func (g *Gauge) Update(value float64) {
 func (g *Gauge) drawGauge(screen tcell.Screen, x int, y int, width int, height int) (int, int, int, int) {
 	value := int(int(g.value) * (width) / 100)
 	centerY := y + height/2
+	barcol := tcell.ColorGreen
+	if g.value > 50 {
+		barcol = tcell.ColorOrange
+	}
+	if g.value > 75 {
+		barcol = tcell.ColorRed
+	}
+
 	for cx := x + 5; cx < x+value; cx++ {
 		screen.SetContent(cx, centerY, tview.BoxDrawingsHeavyVertical,
-			nil, tcell.StyleDefault.Foreground(tcell.ColorWhite))
+			nil, tcell.StyleDefault.Foreground(barcol))
 	}
 	tview.Print(screen, g.label, x+1, centerY, width-2, tview.AlignLeft, tcell.ColorBlue)
 	tview.Print(screen, "[", x+4, centerY, width-2, tview.AlignLeft, tcell.ColorYellow)
