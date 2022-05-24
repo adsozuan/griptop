@@ -2,6 +2,7 @@ package services
 
 import (
 	"adnotanumber.com/griptop/probes"
+	"strconv"
 	"time"
 )
 
@@ -48,9 +49,13 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 }
 
 func GetInfoStatic() SystemInfoStatic {
+	mem := probes.NewMemoryUsage()
+	mem.Acquire()
+	cpumodel := probes.GetCpuModelName()
+
 	sysinfostatic := SystemInfoStatic{
-		MemSize: "32 GB",
-		Proc:    "CPU bubl",
+		MemSize: strconv.FormatUint(mem.TotalMemory, 10),
+		Proc:    cpumodel,
 	}
 
 	return sysinfostatic

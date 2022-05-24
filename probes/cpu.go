@@ -15,3 +15,8 @@ func AcquireCpuUsage() []float64 {
 
 	return cpuPercent
 }
+
+func GetCpuModelName() string {
+	cpuinfo, _ := cpu.Info()
+	return cpuinfo[0].ModelName
+}

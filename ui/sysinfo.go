@@ -1,6 +1,7 @@
 package ui
 
 import (
+	"adnotanumber.com/griptop/services"
 	"fmt"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -15,14 +16,14 @@ type SysInfoWidget struct {
 	proc  *TextWithLabel
 }
 
-func NewSysInfoWidget() *SysInfoWidget {
+func NewSysInfoWidget(sysinfostatic services.SystemInfoStatic) *SysInfoWidget {
 	grid := tview.NewGrid()
 	cpug := NewGauge("CPU")
 	memg := NewGauge("MEM")
 	tasks := NewTaskCount(0, 0)
-	ram := NewTextWithLabel("Size:", "-")
+	ram := NewTextWithLabel("Size:", sysinfostatic.MemSize)
 	upt := NewTextWithLabel("Uptime:", "08:34:10")
-	proc := NewTextWithLabel("Proc:", "-")
+	proc := NewTextWithLabel("Proc:", sysinfostatic.Proc)
 
 	grid.SetRows(1, 1, 1, 1).SetColumns(-1, -1)
 	grid.AddItem(cpug,
