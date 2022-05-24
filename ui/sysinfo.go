@@ -13,6 +13,7 @@ type SysInfoWidget struct {
 	memg  *Gauge
 	tasks *TasksCount
 	ram   *TextWithLabel
+	upt   *TextWithLabel
 	proc  *TextWithLabel
 }
 
@@ -22,7 +23,7 @@ func NewSysInfoWidget(sysinfostatic services.SystemInfoStatic) *SysInfoWidget {
 	memg := NewGauge("MEM")
 	tasks := NewTaskCount(0, 0)
 	ram := NewTextWithLabel("Size:", sysinfostatic.MemSize)
-	upt := NewTextWithLabel("Uptime:", "08:34:10")
+	upt := NewTextWithLabelDyn("Uptime:", "08:34:10")
 	proc := NewTextWithLabel("Proc:", sysinfostatic.Proc)
 
 	grid.SetRows(1, 1, 1, 1).SetColumns(-1, -1)
@@ -45,6 +46,7 @@ func NewSysInfoWidget(sysinfostatic services.SystemInfoStatic) *SysInfoWidget {
 		memg:  memg,
 		tasks: tasks,
 		ram:   ram,
+		upt:   upt,
 		proc:  proc,
 	}
 	return &sysInfoUi
@@ -78,8 +80,11 @@ type TextWithLabel struct {
 
 func NewTextWithLabel(label string, text string) *TextWithLabel {
 	t := TextWithLabel{
-		Grid: tview.NewGrid(),
+		Grid:  tview.NewGrid(),
+		label: label,
+		text:  text,
 	}
+
 	labelw := tview.NewTextView()
 	labelw.SetText(label).SetTextAlign(tview.AlignLeft).SetTextColor(tcell.ColorBlue)
 
@@ -95,4 +100,23 @@ func NewTextWithLabel(label string, text string) *TextWithLabel {
 
 func (t *TextWithLabel) Update(text string) {
 	t.text = text
+}
+
+// NewTextWithLabelDyn Create text widget which must be updated at refresh rate
+func NewTextWithLabelDyn(label string, text string) *TextWithLabel {
+	t := TextWithLabel{
+		Grid:  tview.NewGrid(),
+		label: label,
+		text:  text,
+	}
+
+	t.SetDrawFunc(t.drawTextWithLabel)
+	return &t
+}
+
+func (t *TextWithLabel) drawTextWithLabel(screen tcell.Screen, x int, y int, width int, height int) (int, int, int, int) {
+	centerY := y + height/2
+	tview.Print(screen, t.label, x, centerY, width-2, tview.AlignLeft, tcell.ColorBlue)
+	tview.Print(screen, t.text, x+9, centerY, width-2, tview.AlignLeft, tcell.ColorWhite)
+	return x + 1, centerY + 1, width - 2, height - (centerY + 1 - y)
 }

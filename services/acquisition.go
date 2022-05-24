@@ -15,6 +15,7 @@ type SystemInfoDyn struct {
 	MemUsagePercent  float64
 	TotalTaskCount   int
 	RunningTaskCount int
+	Uptime           string
 }
 
 type SystemInfoStatic struct {
@@ -36,6 +37,7 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 			MemUsagePercent:  mem.UsedMemoryPercent,
 			TotalTaskCount:   tasks.Total,
 			RunningTaskCount: tasks.Running,
+			Uptime:           probes.GetUptime(),
 		}
 
 		select {

@@ -29,6 +29,7 @@ func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, sysinfodyn chan 
 			sysinfoui.cpug.Update(s.CpuUsage)
 			sysinfoui.memg.Update(s.MemUsagePercent)
 			sysinfoui.tasks.Update(s.TotalTaskCount, s.RunningTaskCount)
+			sysinfoui.upt.Update(s.Uptime)
 		})
 	}
 }
