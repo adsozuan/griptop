@@ -1,8 +1,6 @@
 package probes
 
 import (
-	"fmt"
-
 	"github.com/shirou/gopsutil/load"
 )
 
@@ -20,10 +18,7 @@ func NewTaskCountsProbe() *TaskCountsProbe {
 }
 
 func (t *TaskCountsProbe) Acquire() error {
-	mi, err := load.Misc()
-	if err != nil {
-		return fmt.Errorf("task info: %w", err)
-	}
+	mi, _ := load.Misc() // not implemented in gopsutil
 	t.Total = mi.ProcsTotal
 	t.Running = mi.ProcsRunning
 	return nil
