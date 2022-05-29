@@ -1,8 +1,10 @@
 package probes
 
 import (
-	"github.com/shirou/gopsutil/cpu"
+	"fmt"
 	"time"
+
+	"github.com/shirou/gopsutil/cpu"
 )
 
 type CpuUsage struct {
@@ -10,10 +12,13 @@ type CpuUsage struct {
 	usedMemoryPercent float64
 }
 
-func AcquireCpuUsage() []float64 {
-	cpuPercent, _ := cpu.Percent(500*time.Millisecond, false)
+func AcquireCpuUsage() ([]float64, error) {
+	cpuPercent, err := cpu.Percent(500*time.Millisecond, false)
+	if err != nil {
+		return nil, fmt.Errorf("cpu info: %w", err)
+	}
 
-	return cpuPercent
+	return cpuPercent, nil
 }
 
 func GetCpuModelName() string {

@@ -1,9 +1,11 @@
 package services
 
 import (
-	"adnotanumber.com/griptop/probes"
+	"fmt"
 	"strconv"
 	"time"
+
+	"adnotanumber.com/griptop/probes"
 )
 
 const (
@@ -26,11 +28,14 @@ type SystemInfoStatic struct {
 func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 
 	for {
-		cpu := probes.AcquireCpuUsage()
+		cpu, err := probes.AcquireCpuUsage()
 		mem := probes.NewMemoryUsage()
 		tasks := probes.NewTaskCountsProbe()
-		mem.Acquire()
-		tasks.Acquire()
+		err = mem.Acquire()
+		err = tasks.Acquire()
+		if err != nil {
+			fmt.Printf("acquisition: %w", err)
+		}
 
 		sysinfocurr := SystemInfoDyn{
 			CpuUsage:         cpu[0],
@@ -42,7 +47,7 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 
 		select {
 		case <-quit:
-			break
+			return
 		default:
 			sysinfodyn <- sysinfocurr
 			time.Sleep(rate)
@@ -50,9 +55,13 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 	}
 }
 
-func GetInfoStatic() SystemInfoStatic {
+func GetInfoStatic() (SystemInfoStatic, error) {
 	mem := probes.NewMemoryUsage()
-	mem.Acquire()
+	err := mem.Acquire()
+	if err != nil {
+		return SystemInfoStatic{}, fmt.Errorf("static info: %w", err)
+	}
+
 	cpumodel := probes.GetCpuModelName()
 
 	sysinfostatic := SystemInfoStatic{
@@ -60,6 +69,6 @@ func GetInfoStatic() SystemInfoStatic {
 		Proc:    cpumodel,
 	}
 
-	return sysinfostatic
+	return sysinfostatic, nil
 
 }

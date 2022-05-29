@@ -34,7 +34,7 @@ func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, sysinfodyn chan 
 	}
 }
 
-func Run(sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemInfoStatic) {
+func Run(sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemInfoStatic) error {
 	app := tview.NewApplication()
 	sysinfoui := NewSysInfoWidget(sysinfostatic)
 
@@ -46,6 +46,7 @@ func Run(sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemIn
 
 	go updateUi(app, sysinfoui, sysinfodyn)
 	if err := app.SetRoot(grid, true).EnableMouse(true).Run(); err != nil {
-		panic(err)
+		return err
 	}
+	return nil
 }
