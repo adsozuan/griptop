@@ -19,6 +19,7 @@ type SystemInfoDyn struct {
 	TotalTaskCount   int
 	RunningTaskCount int
 	Uptime           string
+	Processes        []*probes.RunningProcess
 }
 
 type SystemInfoStatic struct {
@@ -33,10 +34,17 @@ func Acquire(ctx context.Context, sysinfodyn chan SystemInfoDyn) {
 		mem := probes.NewMemoryUsage()
 		tasks := probes.NewTaskCountsProbe()
 		err = mem.Acquire()
+		if err != nil {
+			fmt.Printf("mem: %w", err)
+		}
 		err = tasks.Acquire()
 		if err != nil {
-			fmt.Printf("acquisition: %w", err)
+			fmt.Printf("tasks: %w", err)
 		}
+		// processes, err := probes.RunningProcesses()
+		// if err != nil {
+		// 	fmt.Printf("processes: %w", err)
+		// }
 
 		sysinfocurr := SystemInfoDyn{
 			CpuUsage:         cpu[0],
@@ -44,6 +52,7 @@ func Acquire(ctx context.Context, sysinfodyn chan SystemInfoDyn) {
 			TotalTaskCount:   tasks.Total,
 			RunningTaskCount: tasks.Running,
 			Uptime:           probes.GetUptime(),
+			//Processes:        processes,
 		}
 
 		select {

@@ -22,9 +22,15 @@ func NewTitle(text string) *Title {
 	return &t
 }
 
-func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, sysinfodyn chan services.SystemInfoDyn) {
+func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, prtabledata *ProcessesTableData, sysinfodyn chan services.SystemInfoDyn) {
 	for {
 		s := <-sysinfodyn
+
+		for _, pr := range s.Processes {
+			row := pr.ToString()
+			prtabledata.AppendRow(row)
+		}
+
 		app.QueueUpdateDraw(func() {
 			sysinfoui.cpug.Update(s.CpuUsage)
 			sysinfoui.memg.Update(s.MemUsagePercent)
@@ -37,14 +43,18 @@ func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, sysinfodyn chan 
 func Run(sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemInfoStatic) error {
 	app := tview.NewApplication()
 	sysinfoui := NewSysInfoWidget(sysinfostatic)
+	prtabledata := NewProcessesTableData()
+	prtable := tview.NewTable().SetBorders(false).SetSelectable(true, false).SetFixed(1, 1).SetContent(prtabledata)
 
-	grid := tview.NewGrid().SetRows(1, 5, -1).
+	grid := tview.NewGrid().SetRows(1, 5, -1).SetColumns(100).
 		AddItem(NewTitle("griptop on my PC"),
 			0, 0, 1, 2, 0, 0, false).
 		AddItem(sysinfoui,
-			1, 0, 1, 1, 0, 0, false)
+			1, 0, 1, 2, 0, 0, false).
+		AddItem(prtable,
+			2, 0, 1, 2, 0, 0, true)
 
-	go updateUi(app, sysinfoui, sysinfodyn)
+	go updateUi(app, sysinfoui, prtabledata, sysinfodyn)
 	if err := app.SetRoot(grid, true).EnableMouse(true).Run(); err != nil {
 		return err
 	}
