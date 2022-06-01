@@ -42,8 +42,9 @@ func (g *Gauge) drawGauge(screen tcell.Screen, x int, y int, width int, height i
 		barcol = tcell.ColorRed
 	}
 
+	const bar = rune('|')
 	for cx := x + 5; cx < x+value; cx++ {
-		screen.SetContent(cx, centerY, tview.BoxDrawingsHeavyVertical,
+		screen.SetContent(cx, centerY, bar,
 			nil, tcell.StyleDefault.Foreground(barcol))
 	}
 	tview.Print(screen, g.label, x+1, centerY, width-2, tview.AlignLeft, tcell.ColorBlue)
