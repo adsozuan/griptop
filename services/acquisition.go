@@ -1,6 +1,7 @@
 package services
 
 import (
+	"context"
 	"fmt"
 	"strconv"
 	"time"
@@ -25,7 +26,7 @@ type SystemInfoStatic struct {
 	Proc    string
 }
 
-func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
+func Acquire(ctx context.Context, sysinfodyn chan SystemInfoDyn) {
 
 	for {
 		cpu, err := probes.AcquireCpuUsage()
@@ -46,7 +47,7 @@ func Acquire(quit chan bool, sysinfodyn chan SystemInfoDyn) {
 		}
 
 		select {
-		case <-quit:
+		case <-ctx.Done():
 			return
 		default:
 			sysinfodyn <- sysinfocurr

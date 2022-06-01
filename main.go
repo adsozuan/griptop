@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"os"
 
@@ -13,13 +14,15 @@ func main() {
 		fmt.Fprintf(os.Stderr, "%s\n", err)
 		os.Exit(1)
 	}
-
 }
 
 func run() error {
-	quit := make(chan bool)
+
+	cancellingCtx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
 	sysinfodyn := make(chan services.SystemInfoDyn)
-	go services.Acquire(quit, sysinfodyn)
+	go services.Acquire(cancellingCtx, sysinfodyn)
 
 	sysinfostatic, err := services.GetInfoStatic()
 	if err != nil {
@@ -30,8 +33,6 @@ func run() error {
 	if err != nil {
 		return fmt.Errorf("UI error: %w", err)
 	}
-
-	quit <- true
 
 	return nil
 }
