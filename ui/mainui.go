@@ -1,6 +1,9 @@
 package ui
 
 import (
+	"context"
+	"time"
+
 	"adnotanumber.com/griptop/services"
 	"github.com/gdamore/tcell/v2"
 	"github.com/rivo/tview"
@@ -22,25 +25,31 @@ func NewTitle(text string) *Title {
 	return &t
 }
 
-func updateUi(app *tview.Application, sysinfoui *SysInfoWidget, prtabledata *ProcessesTableData, sysinfodyn chan services.SystemInfoDyn) {
+func updateUi(ctx context.Context, app *tview.Application, sysinfoui *SysInfoWidget, prtabledata *ProcessesTableData, sysinfodyn chan services.SystemInfoDyn) {
 	for {
-		s := <-sysinfodyn
+		select {
+		case s := <-sysinfodyn:
+			for _, pr := range s.Processes {
+				row := pr.ToString()
+				prtabledata.AppendRow(row)
+			}
+			app.QueueUpdateDraw(func() {
+				sysinfoui.cpug.Update(s.CpuUsage)
+				sysinfoui.memg.Update(s.MemUsagePercent)
+				sysinfoui.tasks.Update(s.TotalTaskCount, s.RunningTaskCount)
+				sysinfoui.upt.Update(s.Uptime)
+			})
 
-		for _, pr := range s.Processes {
-			row := pr.ToString()
-			prtabledata.AppendRow(row)
+		case <-ctx.Done():
+			app.Stop()
+			return
+		default:
+			time.Sleep(100 * time.Millisecond)
 		}
-
-		app.QueueUpdateDraw(func() {
-			sysinfoui.cpug.Update(s.CpuUsage)
-			sysinfoui.memg.Update(s.MemUsagePercent)
-			sysinfoui.tasks.Update(s.TotalTaskCount, s.RunningTaskCount)
-			sysinfoui.upt.Update(s.Uptime)
-		})
 	}
 }
 
-func Run(sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemInfoStatic) error {
+func Run(ctx context.Context, sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemInfoStatic) error {
 	app := tview.NewApplication()
 	sysinfoui := NewSysInfoWidget(sysinfostatic)
 	prtabledata := NewProcessesTableData()
@@ -54,7 +63,7 @@ func Run(sysinfodyn chan services.SystemInfoDyn, sysinfostatic services.SystemIn
 		AddItem(prtable,
 			2, 0, 1, 2, 0, 0, true)
 
-	go updateUi(app, sysinfoui, prtabledata, sysinfodyn)
+	go updateUi(ctx, app, sysinfoui, prtabledata, sysinfodyn)
 	if err := app.SetRoot(grid, true).EnableMouse(true).Run(); err != nil {
 		return err
 	}

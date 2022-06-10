@@ -7,6 +7,7 @@ import (
 
 	"adnotanumber.com/griptop/services"
 	"adnotanumber.com/griptop/ui"
+	"golang.org/x/sync/errgroup"
 )
 
 func main() {
@@ -18,21 +19,35 @@ func main() {
 
 func run() error {
 
-	cancellingCtx, cancel := context.WithCancel(context.Background())
+	g, ctx := errgroup.WithContext(context.Background())
+	_, cancel := context.WithCancel(ctx)
+
 	defer cancel()
 
 	sysinfodyn := make(chan services.SystemInfoDyn)
-	go services.Acquire(cancellingCtx, sysinfodyn)
-
 	sysinfostatic, err := services.GetInfoStatic()
 	if err != nil {
 		return fmt.Errorf("info error: %w", err)
 	}
 
-	err = ui.Run(sysinfodyn, sysinfostatic)
-	if err != nil {
-		return fmt.Errorf("UI error: %w", err)
-	}
+	g.Go(func() error {
+		if err := ui.Run(ctx, sysinfodyn, sysinfostatic); err != nil {
+			cancel()
+			return fmt.Errorf("UI error: %w", err)
+		}
+		return nil
+	})
 
+	g.Go(func() error {
+		if err := services.Acquire(ctx, sysinfodyn); err != nil {
+			cancel()
+			return fmt.Errorf("acquisition error: %w", err)
+		}
+		return nil
+	})
+
+	if err := g.Wait(); err != nil {
+		return err
+	}
 	return nil
 }
