@@ -27,24 +27,28 @@ type SystemInfoStatic struct {
 	Proc    string
 }
 
-func Acquire(ctx context.Context, sysinfodyn chan SystemInfoDyn) {
+func Acquire(ctx context.Context, sysinfodyn chan SystemInfoDyn) error {
 
 	for {
 		cpu, err := probes.AcquireCpuUsage()
+		if err != nil {
+			return fmt.Errorf("cpu: %w", err)
+		}
 		mem := probes.NewMemoryUsage()
 		tasks := probes.NewTaskCountsProbe()
+
 		err = mem.Acquire()
 		if err != nil {
-			fmt.Printf("mem: %w", err)
+			return fmt.Errorf("mem: %w", err)
 		}
 		err = tasks.Acquire()
 		if err != nil {
-			fmt.Printf("tasks: %w", err)
+			return fmt.Errorf("tasks: %w", err)
 		}
-		// processes, err := probes.RunningProcesses()
-		// if err != nil {
-		// 	fmt.Printf("processes: %w", err)
-		// }
+		processes, err := probes.RunningProcesses()
+		if err != nil {
+			return fmt.Errorf("processes: %w", err)
+		}
 
 		sysinfocurr := SystemInfoDyn{
 			CpuUsage:         cpu[0],
@@ -52,12 +56,12 @@ func Acquire(ctx context.Context, sysinfodyn chan SystemInfoDyn) {
 			TotalTaskCount:   tasks.Total,
 			RunningTaskCount: tasks.Running,
 			Uptime:           probes.GetUptime(),
-			//Processes:        processes,
+			Processes:        processes,
 		}
 
 		select {
 		case <-ctx.Done():
-			return
+			return ctx.Err()
 		default:
 			sysinfodyn <- sysinfocurr
 			time.Sleep(rate)

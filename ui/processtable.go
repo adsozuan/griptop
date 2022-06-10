@@ -30,7 +30,7 @@ func NewProcessesTableData() *ProcessesTableData {
 func (d *ProcessesTableData) GetCell(row int, column int) *tview.TableCell {
 	// fill header
 	if row == 0 {
-		return tview.NewTableCell(fmt.Sprintf("[black::b]%s", strings.ToUpper(headers[column]))).
+		return tview.NewTableCell(fmt.Sprintf("[white::b]%s", strings.ToUpper(headers[column]))).
 			SetExpansion(1).
 			SetBackgroundColor(tcell.ColorGreen).
 			SetTextColor(tcell.ColorWhite).
