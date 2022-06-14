@@ -49,24 +49,22 @@ func RunningProcesses() ([]*RunningProcess, error) {
 				return nil, err
 			}
 
-			mem, err := pr.MemoryInfoEx()
-			if err != nil {
-				return nil, fmt.Errorf("meminfo %w", err)
-			}
-
 			usrname, err := pr.Username()
 			if err != nil {
-				return nil, fmt.Errorf("username: %w", err)
+				// return nil, fmt.Errorf("username: %w", err)
+				usrname = "default"
 			}
 
 			prio, err := pr.CPUAffinity()
 			if err != nil {
-				return nil, err
+				// return nil, err
+				prio = []int32{0}
 			}
 
 			cpu, err := pr.CPUPercent()
 			if err != nil {
-				return nil, err
+				// return nil, err
+				cpu = 0.0
 			}
 
 			thrd, err := pr.NumThreads()
@@ -74,12 +72,17 @@ func RunningProcesses() ([]*RunningProcess, error) {
 				return nil, err
 			}
 
+			// mem, err := pr.MemoryInfoEx()
+			// if err != nil {
+			// 	return nil, fmt.Errorf("meminfo %w", err)
+			// }
+
 			rp := RunningProcess{
 				pid:      pr.Pid,
 				user:     usrname,
 				priority: prio[0],
 				cpu:      fmt.Sprintf("%f%%", cpu),
-				mem:      fmt.Sprint("%s", mem),
+				mem:      fmt.Sprint(""),
 				thread:   thrd,
 				time:     "",
 				name:     name,
