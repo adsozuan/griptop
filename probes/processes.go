@@ -81,7 +81,7 @@ func RunningProcesses() ([]*RunningProcess, error) {
 				pid:      pr.Pid,
 				user:     usrname,
 				priority: prio[0],
-				cpu:      fmt.Sprintf("%f%%", cpu),
+				cpu:      fmt.Sprintf("%.1f%%", cpu),
 				mem:      fmt.Sprint(""),
 				thread:   thrd,
 				time:     "",
